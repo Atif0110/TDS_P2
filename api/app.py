@@ -13,9 +13,7 @@ os.makedirs(tmp_dir, exist_ok=True)
 
 app = Flask(__name__)
 
-
 SECRET_PASSWORD = os.getenv("SECRET_PASSWORD")
-
 
 @app.route("/", methods=["POST"])
 def process_file():
@@ -47,9 +45,13 @@ def process_file():
             answer = solution_function(*parameters)
         return jsonify({"answer": answer})
     except Exception as e:
-        print(e,"this is the error")
+        print(e, "this is the error")
         return jsonify({"error": str(e)}), 500
 
+# ✅ NEW ROUTE: Allow GET request to root URL
+@app.route("/", methods=["GET"])
+def index():
+    return "Server is live. Use POST to access the API.", 200
 
 @app.route('/redeploy', methods=['GET'])
 def redeploy():
@@ -61,7 +63,6 @@ def redeploy():
 
     subprocess.run(["../redeploy.sh"], shell=True)
     return "Redeployment triggered!", 200
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
